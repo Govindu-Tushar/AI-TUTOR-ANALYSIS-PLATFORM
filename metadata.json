@@ -1,0 +1,6 @@
+{
+  "name": "AI Tutor Analyzer",
+  "description": "An enterprise-grade platform for AI-powered tutor performance analysis, body language detection, transcription, and interactive mentorship.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

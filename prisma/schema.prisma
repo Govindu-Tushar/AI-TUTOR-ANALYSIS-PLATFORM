@@ -1,0 +1,107 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Course {
+  id             String   @id
+  name           String
+  category       String
+  tutorsCount    Int
+  averageScore   Float
+  totalEvaluated Int
+  lastUpdated    String
+  description    String
+  tutors         Tutor[]
+}
+
+model Tutor {
+  id               String               @id
+  name             String
+  subject          String
+  experience       String
+  avatarUrl        String?
+  averageScore     Float
+  status           String               // Active, Pending Review, Underperforming, Elite
+  totalEvaluations Int
+  lastEvaluated    String
+  courseId         String
+  course           Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  metrics          TeachingMetrics?
+  bodyLanguage     BodyLanguageMetrics?
+  transcript       TranscriptItem[]
+  recommendations  TutorRecommendations?
+  timeline         TimelineEvent[]
+}
+
+model TeachingMetrics {
+  id                  String @id @default(uuid())
+  tutorId             String @unique
+  tutor               Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  subjectKnowledge    Int
+  conceptualClarity   Int
+  communicationName   Int
+  engagement          Int
+  teachingMethodology Int
+  confidence          Int
+  mentorship          Int
+  feedbackQuality     Int
+}
+
+model BodyLanguageMetrics {
+  id                      String   @id @default(uuid())
+  tutorId                 String   @unique
+  tutor                   Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  eyeContactScore         Int
+  gestureAnalysis         String
+  postureAnalysis         String
+  movementQuality         String
+  facialExpressionScore   Int
+  facialAnalysis          String
+  confidenceDetection     Int
+  energyLevel             String   // High, Moderate, Low
+  eyeContactTimeline      Int[]
+  gestureFrequency        Int[]
+}
+
+model TranscriptItem {
+  id            String  @id
+  tutorId       String
+  tutor         Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  timestamp     String
+  seconds       Int
+  speaker       String
+  text          String
+  sentiment     String  // Positive, Neutral, Negative
+  tags          String[]
+  highlightType String? // clarity, mentorship, engagement, etc.
+}
+
+model TutorRecommendations {
+  id                     String   @id @default(uuid())
+  tutorId                String   @unique
+  tutor                  Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  strengths              String[]
+  weaknesses             String[]
+  trainingRecommendations String[]
+  suggestedCourses       String[]
+  plan30Days             String[]
+  plan60Days             String[]
+  plan90Days             String[]
+  projectedImprovement   Int
+}
+
+model TimelineEvent {
+  id          String @id @default(uuid())
+  tutorId     String
+  tutor       Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  time        String
+  seconds     Int
+  type        String // success, warning, info
+  title       String
+  description String
+}
